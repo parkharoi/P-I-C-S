@@ -13,6 +13,9 @@
 - **ORM**: TypeORM
 - **Architecture**: Modular Domain Driven Design
 
+![구조](docs/images/structure.png)
+
+
 ---
 
 ## ⋆◡̎⋆ Project Structure (ERD 기반 모듈 설계)
