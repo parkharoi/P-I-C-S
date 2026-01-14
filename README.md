@@ -27,6 +27,9 @@ Nest.js CLI를 활용하여 도메인별로 엄격하게 분리된 구조를 지
 - **Payments**: 결제 이력 및 환불 내역 추적
 - **Disputes**: AI 시세 분석을 통한 가격 분쟁 조정
 
+### - ERD -
+![ERD](docs/images/erd.png)
+
 ---
 
 ## ʕتʔ commit 규칙
