@@ -2,11 +2,26 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './configs/typeorm.config';
-import { MemberModule } from './modules/members/memberModule';
+import { getTypeOrmConfig } from './configs/typeorm.config';
+import { MemberModule } from './modules/members/member.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeORMConfig), MemberModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        getTypeOrmConfig(configService),
+    }),
+    MemberModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

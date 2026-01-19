@@ -47,8 +47,11 @@ export class MemberService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneByEmail(email: string): Promise<Member | null> {
+    return await this.memberRepository.findOne({
+      where: { email },
+      select: ['member_id', 'email', 'password', 'name'],
+    });
   }
 
   // update(id: number, updateMemberDto: UpdateMemberDto) {
