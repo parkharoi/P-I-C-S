@@ -10,4 +10,9 @@ export class AuthController {
   signIn(@Body() signInDto: Record<string, any>) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
+
+  @Post('logout')
+  async logout(@Body('member_id') member_id: string) {
+    return await this.authService.logout(member_id);
+  }
 }

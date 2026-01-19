@@ -13,9 +13,9 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
+  //로그인
+  async signIn(email: string, pass: string) {
     const member = await this.memberService.findOneByEmail(email);
-
     const isMatch = member
       ? await bcrypt.compare(pass, member.password)
       : false;
@@ -26,17 +26,38 @@ export class AuthService {
       );
     }
 
-    const payload = {
-      sub: member.member_id,
-      email: member.email,
-      name: member.name,
-    };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.generateAccessToken(member),
+      this.generateRefreshToken(member),
+    ]);
 
-    return {
-      access_token: await this.jwtService.signAsync(payload, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-        expiresIn: '1h',
-      }),
-    };
+    await this.memberService.updateRefreshToken(member.member_id, refreshToken);
+
+    return { accessToken, refreshToken };
+  }
+
+  private async generateAccessToken(member: any): Promise<string> {
+    return this.jwtService.signAsync(
+      { sub: member.member_id, email: member.email },
+      {
+        secret: this.configService.get('JWT_ACCESS_SECRET'),
+        expiresIn: '15m',
+      },
+    );
+  }
+
+  private async generateRefreshToken(member: any): Promise<string> {
+    return this.jwtService.signAsync(
+      { sub: member.member_id },
+      {
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+        expiresIn: '7d',
+      },
+    );
+  }
+
+  async logout(member_id: string) {
+    await this.memberService.removeRefreshToken(member_id);
+    return { message: '성공적으로 로그아웃 되었습니다.' };
   }
 }
