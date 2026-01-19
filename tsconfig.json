@@ -17,5 +17,14 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  //src 폴더 내 모든 파일 포함
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+  //컴파일에서 제외할 폴더
 }

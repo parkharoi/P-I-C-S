@@ -23,6 +23,9 @@ export class Member extends BaseEntity {
   name: string;
 
   @Column({ nullable: true })
+  currentRefreshToken?: string;
+
+  @Column({ nullable: true })
   address: string;
 
   @Column({ name: 'seller_verified', type: 'boolean', default: false })
