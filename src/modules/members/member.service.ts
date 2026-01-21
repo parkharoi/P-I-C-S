@@ -16,24 +16,7 @@ export class MemberService {
     private memberRepository: Repository<Member>,
   ) {}
 
-  async updateRefreshToken(
-    member_id: string,
-    refreshToken: string,
-  ): Promise<void> {
-    const salt = await bcrypt.genSalt();
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
-
-    await this.memberRepository.update(member_id, {
-      currentRefreshToken: hashedRefreshToken,
-    });
-  }
-
-  async removeRefreshToken(member_id: string): Promise<void> {
-    await this.memberRepository.update(member_id, {
-      currentRefreshToken: null,
-    });
-  }
-
+  //회원가입
   async signUp(createMemberDto: CreateMemberDto): Promise<void> {
     const { email, password, name } = createMemberDto;
 
@@ -61,10 +44,28 @@ export class MemberService {
     }
   }
 
+  async updateRefreshToken(
+    member_id: string,
+    refreshToken: string,
+  ): Promise<void> {
+    const salt = await bcrypt.genSalt();
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
+
+    await this.memberRepository.update(member_id, {
+      currentRefreshToken: hashedRefreshToken,
+    });
+  }
+
+  async removeRefreshToken(member_id: string): Promise<void> {
+    await this.memberRepository.update(member_id, {
+      currentRefreshToken: null,
+    });
+  }
+
   async findOneByEmail(email: string): Promise<Member | null> {
     return await this.memberRepository.findOne({
       where: { email },
-      select: ['member_id', 'email', 'password', 'name'],
+      select: ['member_id', 'email', 'password', 'name', 'sellerVerified'],
     });
   }
 }

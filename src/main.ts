@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, //DTO 정의 안 된 값은 거른다.
-      forbidNonWhitelisted: true, // DTO에 없는 값이 들어오면 에러 발생
+      forbidNonWhitelisted: false, // DTO에 없는 값이 들어오면 에러 발생
       transform: true, // 클라이언트가 보낸 값을 DTO 타입으로 자동 변환
     }),
   );

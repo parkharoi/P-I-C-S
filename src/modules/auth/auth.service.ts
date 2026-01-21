@@ -38,7 +38,11 @@ export class AuthService {
 
   private async generateAccessToken(member: any): Promise<string> {
     return this.jwtService.signAsync(
-      { sub: member.member_id, email: member.email },
+      {
+        sub: member.member_id,
+        email: member.email,
+        sellerVerified: member.sellerVerified,
+      },
       {
         secret: this.configService.get('JWT_ACCESS_SECRET'),
         expiresIn: '15m',
