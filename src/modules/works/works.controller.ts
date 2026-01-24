@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -14,6 +17,7 @@ import { WorksService } from './works.service';
 import { CreateWorkDto } from './dto/create-work.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { SellerVerifiedGuard } from '../../common/guards/seller-verified.guard';
+import { PageReqDto } from '../../common/dto/page-req.dto';
 
 @Controller('works')
 export class WorksController {
@@ -34,6 +38,8 @@ export class WorksController {
       }),
     }),
   )
+
+  //작품 생성
   async create(
     @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
@@ -47,5 +53,12 @@ export class WorksController {
       ...createWorkDto,
       image_url: imageUrl,
     });
+  }
+
+  @Get()
+  findAllPublic(
+    @Query(new ValidationPipe({ transform: true })) query: PageReqDto,
+  ) {
+    return this.worksService.findAllPublic(query);
   }
 }

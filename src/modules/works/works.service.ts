@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateWorkDto } from './dto/create-work.dto';
 import { Member } from '../members/entities/member.entity';
 import { ErrorCode, ErrorMessage } from '../../common/enums/error-code.enum';
+import { PageReqDto } from '../../common/dto/page-req.dto';
 
 @Injectable()
 export class WorksService {
@@ -47,12 +48,66 @@ export class WorksService {
     return await this.workRepository.save(work);
   }
 
-  findAll() {
-    return `This action returns all works`;
+  //모든 사람의 작품 리스트
+  async findAllPublic(query: PageReqDto) {
+    const { page, limit } = query;
+
+    const [works, total] = await this.workRepository.findAndCount({
+      relations: ['author'],
+      select: {
+        work_id: true,
+        title: true,
+        price: true,
+        image_url: true,
+        created_at: true,
+        author: {
+          member_id: true,
+          name: true,
+        },
+      },
+      order: {
+        created_at: 'DESC',
+      },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return {
+      data: works,
+      meta: {
+        total,
+        page,
+        lastPage: Math.ceil(total / limit),
+        count: works.length,
+      },
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} work`;
+  async findOne(id: string) {
+    const work = await this.workRepository.findOne({
+      where: { work_id: id },
+      relations: ['author'],
+      select: {
+        work_id: true,
+        title: true,
+        description: true,
+        price: true,
+        suggested_price: true,
+        image_url: true,
+        status: true,
+        created_at: true,
+        author: {
+          member_id: true,
+          name: true,
+        },
+      },
+    });
+
+    if (!work) {
+      throw new NotFoundException(`Work with ID ${id} not found`);
+    }
+
+    return work;
   }
 
   // update(id: number, updateWorkDto: UpdateWorkDto) {
