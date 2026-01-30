@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Req,
@@ -18,10 +19,14 @@ import { CreateWorkDto } from './dto/create-work.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { SellerVerifiedGuard } from '../../common/guards/seller-verified.guard';
 import { PageReqDto } from '../../common/dto/page-req.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('works')
 export class WorksController {
-  constructor(private readonly worksService: WorksService) {}
+  constructor(
+    private readonly worksService: WorksService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, SellerVerifiedGuard)
@@ -55,10 +60,16 @@ export class WorksController {
     });
   }
 
+  //전체 작품 조회
   @Get()
   findAllPublic(
     @Query(new ValidationPipe({ transform: true })) query: PageReqDto,
   ) {
     return this.worksService.findAllPublic(query);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.worksService.findOne(id);
   }
 }
