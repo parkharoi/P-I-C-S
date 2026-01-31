@@ -15,12 +15,11 @@ export class WorksService {
     private workRepository: Repository<Work>,
     @InjectRepository(Member)
     private memberRepository: Repository<Member>,
-    private readonly aiSafetyService: AiSafetyService, // [2] 주입 (HttpService, ConfigService 제거됨)
+    private readonly aiSafetyService: AiSafetyService,
   ) {}
 
   // 작품 등록
   async create(memberId: string, createWorkDto: CreateWorkDto) {
-    // 1. 유저 검증
     const user = await this.memberRepository.findOne({
       where: { member_id: memberId },
     });
@@ -41,7 +40,6 @@ export class WorksService {
 
     await this.aiSafetyService.checkImage(createWorkDto.image_url);
 
-    // 3. DB 저장
     const work = this.workRepository.create({
       ...createWorkDto,
       author: user,

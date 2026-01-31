@@ -7,6 +7,7 @@ import {
   Query,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { WorksService } from './works.service';
 import { CreateWorkDto } from './dto/create-work.dto';
 import { PageReqDto } from '../../common/dto/page-req.dto';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('works')
 export class WorksController {
@@ -24,6 +26,7 @@ export class WorksController {
   ) {}
 
   //작품 생성
+  @UseGuards(AuthGuard('jwt'))
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async create(
