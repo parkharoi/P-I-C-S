@@ -19,7 +19,7 @@ export class WorksService {
   ) {}
 
   // 작품 등록
-  async create(memberId: string, createWorkDto: CreateWorkDto) {
+  async create(memberId: string, createWorkDto: CreateWorkDto, file) {
     const user = await this.memberRepository.findOne({
       where: { member_id: memberId },
     });
@@ -38,12 +38,14 @@ export class WorksService {
       });
     }
 
-    await this.aiSafetyService.checkImage(createWorkDto.image_url);
+    const s3Url = file.location;
+    await this.aiSafetyService.checkImage(s3Url);
 
     const work = this.workRepository.create({
       ...createWorkDto,
       author: user,
       is_safe: true,
+      image_url: s3Url,
     });
 
     return await this.workRepository.save(work);

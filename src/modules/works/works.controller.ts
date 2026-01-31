@@ -41,7 +41,7 @@ export class WorksController {
     console.log('s3 업로드 주소', file.location);
     const memberId = req.user.userId;
 
-    return this.worksService.create(memberId, createWorkDto);
+    return this.worksService.create(memberId, createWorkDto, file);
   }
 
   //전체 작품 조회
