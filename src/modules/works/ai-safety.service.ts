@@ -1,6 +1,6 @@
 import {
-  Injectable,
   ForbiddenException,
+  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -19,9 +19,12 @@ export class AiSafetyService {
    * 안전하지 않으면 ForbiddenException을 던집니다.
    */
   async checkImage(imageUrl: string): Promise<void> {
+    console.log(
+      `[NestJS 요청] FastAPI로 보내는 URL: ${imageUrl}, 타입: ${typeof imageUrl}`,
+    );
     const aiServerUrl = this.configService.get<string>(
       'AI_SERVER_URL',
-      'http://127.0.0.1:8000',
+      'http://127.0.0.1:8000/api/v1',
     );
     const checkEndpoint = `${aiServerUrl}/check-safety`;
 
@@ -41,13 +44,15 @@ export class AiSafetyService {
         });
       }
     } catch (error) {
-      // 이미 정의된 에러(차단됨)는 그대로 전달
-      if (error instanceof ForbiddenException) {
-        throw error;
+      if (error.response) {
+        console.error(
+          '[FastAPI 422 응답 상세]:',
+          JSON.stringify(error.response.data),
+        );
+      } else {
+        console.error('[요청 전송 실패]:', error.message);
       }
 
-      // 통신 에러 등 예상치 못한 에러 처리
-      console.error('[AI Safety Check Error]', error.message);
       throw new InternalServerErrorException(
         'AI 유해성 검사 서버와 통신 중 오류가 발생했습니다.',
       );
