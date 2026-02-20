@@ -7,7 +7,7 @@ const TOKEN = __ENV.TOKEN;
 const image = open('../../uploads/bookCover.jpeg', 'b');
 
 export const options = {
-  vus: 50, // 동시 사용자
+  vus: 100, // 동시 사용자
   duration: '30s', // 테스트 시간
 };
 
